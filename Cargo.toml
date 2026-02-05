@@ -8,7 +8,7 @@ license = "MIT"
 
 [dependencies]
 # CLI
-clap = { version = "4.5", features = ["derive"] }
+clap = { version = "4.5", features = ["derive", "env"] }
 
 # TUI
 ratatui = "0.29"
