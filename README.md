@@ -1,22 +1,23 @@
 # CFTunnel
 
-Cloudflare Tunnel (`/etc/cloudflared/config.yml`) 설정을 관리하는 **Ratatui 기반 TUI** 도구입니다.
+A **Ratatui-based TUI** tool for managing Cloudflare Tunnel (`/etc/cloudflared/config.yml`) ingress rules.
 
 ![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## 기능
+## Features
 
-- **Ingress 매핑 관리**: 추가, 수정, 삭제
-- **프로토콜 지원**: HTTP, HTTPS, SSH, TCP
-- **자동 백업**: 변경 전 자동 백업 생성
-- **백업 복원**: 이전 설정으로 복원
-- **서비스 관리**: cloudflared 서비스 상태 확인 및 재시작
-- **Vim 스타일 네비게이션**: j/k로 이동
+- **Ingress Management**: Add, edit, delete hostname → service mappings
+- **Protocol Support**: HTTP, HTTPS, SSH, TCP
+- **Automatic Backup**: Creates backup before every change
+- **Backup Restore**: Restore previous configurations
+- **Service Control**: Check status and restart cloudflared service
+- **Responsive UI**: Adapts to small terminal sizes
+- **Vim-style Navigation**: Use j/k keys to navigate
 
-## 설치
+## Installation
 
-### 빌드
+### Build from source
 
 ```bash
 git clone <repo>
@@ -24,52 +25,79 @@ cd cftunnel
 cargo build --release
 ```
 
-### 시스템 설치
+### Install to system
 
 ```bash
 sudo cp target/release/cftunnel /usr/local/bin/
 ```
 
-## 사용법
+## Usage
+
+### TUI Mode
 
 ```bash
-# 기본 경로 (/etc/cloudflared/config.yml)
+# Default config path (/etc/cloudflared/config.yml)
 sudo cftunnel
 
-# 커스텀 경로
+# Custom config path
+sudo cftunnel -c /path/to/config.yml
+
+# Or use environment variable
 CFTUNNEL_CONFIG=/path/to/config.yml sudo -E cftunnel
 ```
 
-## 키보드 단축키
+### CLI Mode
 
-### 메인 화면
+```bash
+# Show help
+cftunnel --help
 
-| 키 | 동작 |
-|---|---|
-| `↑`/`↓` 또는 `j`/`k` | 메뉴 이동 |
-| `Enter` | 선택 |
-| `l` | 매핑 목록 |
-| `a` | 새 매핑 추가 |
-| `e` | 매핑 수정 |
-| `d` | 매핑 삭제 |
-| `b` | 백업 생성 |
-| `r` | 백업 복원 |
-| `s` | 서비스 상태 |
-| `?` | 도움말 |
-| `q` | 종료 |
+# Show version
+cftunnel --version
 
-### 폼 입력
+# List current rules without TUI
+cftunnel --list
+```
 
-| 키 | 동작 |
-|---|---|
-| `Tab` | 다음 필드 |
-| `Shift+Tab` | 이전 필드 |
-| `←`/`→` | 프로토콜 변경 |
-| `Space` | 체크박스 토글 |
-| `Enter` | 제출 |
-| `Esc` | 취소 |
+## CLI Options
 
-## 지원 Config 형식
+| Option | Description |
+|--------|-------------|
+| `-c, --config <PATH>` | Path to cloudflared config file (default: `/etc/cloudflared/config.yml`) |
+| `-l, --list` | List current ingress rules and exit |
+| `-h, --help` | Print help |
+| `-V, --version` | Print version |
+
+## Keyboard Shortcuts
+
+### Main Screen
+
+| Key | Action |
+|-----|--------|
+| `↑`/`↓` or `j`/`k` | Navigate menu |
+| `Enter` | Select |
+| `l` | List mappings |
+| `a` | Add new mapping |
+| `e` | Edit mapping |
+| `d` | Delete mapping |
+| `b` | Create backup |
+| `r` | Restore backup |
+| `s` | Service status |
+| `?` | Help |
+| `q` | Quit |
+
+### Form Input
+
+| Key | Action |
+|-----|--------|
+| `Tab` | Next field |
+| `Shift+Tab` | Previous field |
+| `←`/`→` | Change protocol |
+| `Space` | Toggle checkbox |
+| `Enter` | Submit |
+| `Esc` | Cancel |
+
+## Supported Config Format
 
 ```yaml
 tunnel: your-tunnel-id
@@ -85,15 +113,21 @@ ingress:
     originRequest:
       noTLSVerify: true
       httpHostHeader: secure.example.com
-  - service: http_status:404  # catch-all (필수)
+  - service: http_status:404  # catch-all (required)
 ```
 
-## 백업
+## Backups
 
-- 위치: `/etc/cloudflared/backups/`
-- 형식: `config_YYYYMMDD_HHMMSS.yml`
-- 복원 시 현재 설정도 자동 백업
+- Location: `/etc/cloudflared/backups/`
+- Format: `config_YYYYMMDD_HHMMSS.yml`
+- Current config is also backed up when restoring
 
-## 라이센스
+## Requirements
+
+- Rust 1.70+
+- sudo privileges (for config modification and service restart)
+- cloudflared installed and configured
+
+## License
 
 MIT
